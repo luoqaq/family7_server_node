@@ -1,0 +1,16 @@
+{
+    "eslint.format.enable": true,
+    "editor.codeActionsOnSave": {
+        // 启用ESLint规则格式化以上设为none的代码
+        "source.fixAll.eslint": true
+    },
+    "editor.tabSize": 2,
+    // 保存时格式化代码
+    "editor.formatOnSave": true,
+    "eslint.trace.server": "off",
+    // 粘贴时格式化代码
+    "editor.formatOnPaste": false,
+    "[typescript]": {
+        "editor.defaultFormatter": "esbenp.prettier-vscode"
+    },
+}
