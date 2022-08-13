@@ -4,20 +4,45 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev:mongo": "mongod --dbpath \"G:\\MongoDB\\db\\data\"",
+    "dev": "cross-env NODE_ENV=development nodemon --exec ts-node src/app.ts",
+    "build-ts": "tsc",
+    "build:test": "rm -fr dist && npm run lint && npm run build-ts",
+    "build:production": "rm -fr dist && npm run lint && npm run build-ts",
+    "serve:production": "cross-env NODE_ENV=production pm2 startOrReload pm2-start.json --no-daemon",
+    "stop": "pm2 status && pm2 stop all"
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "eslint": "^8.21.0",
+    "eslint-config-prettier": "^8.5.0",
+    "faker-zh-cn": "^0.5.9",
+    "jsonwebtoken": "^8.5.1",
+    "koa": "^2.13.4",
+    "koa-body": "^5.0.0",
+    "koa-json-error": "^3.1.2",
+    "koa-parameter": "^3.0.1",
+    "koa-router": "^12.0.0",
+    "koa-static": "^5.0.0",
+    "mongoose": "^6.5.2",
+    "prettier": "^2.7.1"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^8.5.8",
+    "@types/koa": "^2.13.5",
+    "@types/koa-router": "^7.4.4",
     "@types/mongoose": "^5.11.97",
     "@typescript-eslint/eslint-plugin": "^5.33.0",
     "@typescript-eslint/parser": "^5.33.0",
-    "eslint": "^8.21.0",
-    "eslint-config-prettier": "^8.5.0",
-    "koa": "^2.13.4",
-    "koa-router": "^12.0.0",
-    "mongoose": "^6.5.2",
-    "prettier": "^2.7.1"
+    "@types/koa-bodyparser": "^4.3.7",
+    "@types/koa-json-error": "^3.1.4",
+    "@types/koa-static": "^4.0.2",
+    "cross-env": "^7.0.3",
+    "nodemon": "^2.0.19",
+    "ts-node": "^10.9.1",
+    "typescript": "^4.7.4"
   }
 }
