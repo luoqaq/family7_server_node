@@ -15,9 +15,9 @@ const getUserName = async () => {
 
 const createUser = async (ctx: Koa.DefaultContext) => {
   console.log('controller-user-cereate-1', ctx.request.body)
-  // ctx.verifyPrams({
-  //   openid: { type: 'string', required: true },
-  // })
+  ctx.verifyPrams({
+    openid: { type: 'string', required: true },
+  })
   const { name, openid } = ctx.request.body
   const repeatUser = await User.findOne({ openid })
   console.log('repeatUser', repeatUser)
@@ -49,18 +49,16 @@ class UserController {
 
   async login(ctx: Koa.DefaultContext) {
     console.log('controller-user-login', ctx.request.body, ctx.params)
-    // ctx.verifyParams({
-    //   openid: { type: 'string', required: true },
-    // })
+    ctx.verifyParams({
+      openid: { type: 'string', required: true },
+    })
     const { openid } = ctx.request.body
     const user = await User.findOne({ openid })
-    console.log('controller-user-login-user', user)
     if (user) {
-      console.log('controller-user-login-有用户', user)
-      ctx.body = user
+      ctx.success(user)
     } else {
       const new_user = await createUser(ctx)
-      ctx.body = new_user
+      ctx.success(new_user)
     }
   }
 }

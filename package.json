@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev:mongo": "mongod --dbpath \"G:\\MongoDB\\db\\data\"",
+    "dev:db": "mongod --dbpath \"G:\\MongoDB\\db\\data\"",
     "dev": "cross-env NODE_ENV=development nodemon --exec ts-node src/app.ts",
     "build-ts": "tsc",
     "build:test": "rm -fr dist && npm run lint && npm run build-ts",

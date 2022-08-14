@@ -5,7 +5,8 @@ import mongooses from 'mongoose'
 import koaBody from 'koa-body'
 import koaStatic from 'koa-static'
 import koaJsonError from 'koa-json-error'
-// const koaParameter = require('koa-parameter')
+import routerResponse from './middleware/routerResponse'
+const koaParameter = require('koa-parameter')
 const path = require('path')
 const app = new Koa()
 
@@ -19,7 +20,11 @@ mongooses.connect(MongoURI, {}, (err) => {
 app.use(koaStatic(path.join(__dirname, 'public')))
 app.use(
   koaJsonError({
-    postFormat: (e, { stack, ...rest }) => (process.env.NODE_ENV === 'production' ? rest : { stack, ...rest }),
+    postFormat: (e, { stack, ...rest }) => ({
+      code: -1,
+      msg: 'error',
+      data: process.env.NODE_ENV === 'production' ? rest : { stack, ...rest },
+    }),
   })
 )
 app.use(
@@ -34,6 +39,7 @@ app.use(
     },
   })
 )
-// app.use(koaParameter(app))
+app.use(koaParameter(app))
+app.use(routerResponse())
 Routes(app)
 app.listen(3000, () => console.log('服务启动 3000'))
