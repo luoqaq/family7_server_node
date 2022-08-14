@@ -5,11 +5,12 @@ const router = new Router({
   prefix: '/users',
 })
 
-const { login } = UserController
+const { login, update } = UserController
 
 // 用户登录
 router.post('/', login)
 
-//
+// 用户更新
+router.patch('/', update)
 
 module.exports = router

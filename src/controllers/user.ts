@@ -48,7 +48,6 @@ class UserController {
   }
 
   async login(ctx: Koa.DefaultContext) {
-    console.log('controller-user-login', ctx.request.body, ctx.params)
     ctx.verifyParams({
       openid: { type: 'string', required: true },
     })
@@ -56,6 +55,26 @@ class UserController {
     const user = await User.findOne({ openid })
     if (user) {
       ctx.success(user)
+    } else {
+      const new_user = await createUser(ctx)
+      ctx.success(new_user)
+    }
+  }
+
+  async update(ctx: Koa.DefaultContext) {
+    ctx.verifyParams({
+      openid: { type: 'string', required: true },
+      name: { type: 'string', required: true },
+    })
+    const { openid } = ctx.request.body
+    const user = await User.findOne({ openid })
+    if (user) {
+      try {
+        await User.updateOne({ openid }, { ...ctx.request.body })
+        ctx.success('更新成功')
+      } catch (error) {
+        ctx.error(error)
+      }
     } else {
       const new_user = await createUser(ctx)
       ctx.success(new_user)
