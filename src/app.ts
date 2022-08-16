@@ -1,11 +1,13 @@
 import Koa from 'koa'
 import Routes from './routes/index'
-import { MongoURI } from './config/config'
+import { jwtSecret, MongoURI } from './config/config'
 import mongooses from 'mongoose'
 import koaBody from 'koa-body'
 import koaStatic from 'koa-static'
 import koaJsonError from 'koa-json-error'
 import routerResponse from './middleware/routerResponse'
+import jwt from 'koa-jwt'
+import auth from './utils/auth'
 const koaParameter = require('koa-parameter')
 const path = require('path')
 const app = new Koa()
@@ -17,6 +19,7 @@ mongooses.connect(MongoURI, {}, (err) => {
     console.log('[Mongoose] database connect success !')
   }
 })
+app.use(jwt({ secret: jwtSecret, isRevoked: auth.verify }).unless({ path: [/^\/users\/login/] }))
 app.use(koaStatic(path.join(__dirname, 'public')))
 app.use(
   koaJsonError({

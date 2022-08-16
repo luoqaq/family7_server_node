@@ -7,7 +7,7 @@ export default (app: Koa<Koa.DefaultState, Koa.DefaultContext>) => {
     if (file === 'index.ts') {
       return
     }
-    const route = require(`./${file}`)
-    app.use(route.routes()).use(route.allowedMethods())
+    const router = require(`./${file}`)
+    app.use(router.routes()).use(router.allowedMethods())
   })
 }
