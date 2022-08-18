@@ -19,7 +19,7 @@ mongooses.connect(MongoURI, {}, (err) => {
     console.log('[Mongoose] database connect success !')
   }
 })
-app.use(jwt({ secret: jwtSecret, isRevoked: auth.verify }).unless({ path: [/^\/users\/login/] }))
+app.use(jwt({ secret: jwtSecret, isRevoked: auth.verify }).unless({ path: [/^\/public/, /^\/private/] }))
 app.use(koaStatic(path.join(__dirname, 'public')))
 app.use(
   koaJsonError({

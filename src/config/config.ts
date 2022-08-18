@@ -7,3 +7,5 @@ export const WEIXIN = {
 
 export const jwtSecret = 'luoqaq_family7_sssss'
 export const jwtExpiresIn = 60 * 60 * 24
+
+export const TOKEN = 'luoqaq_family_private_api_token_980510_951108'
