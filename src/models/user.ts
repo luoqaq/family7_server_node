@@ -7,9 +7,10 @@ const UserSchema = new Schema({
   name: { type: String },
   phone: { type: String },
   avatar_url: { type: String },
-  createDate: { type: Date },
-  updateDate: { type: Date },
-  updateCount: { type: Number },
+  create_date: { type: Date },
+  update_date: { type: Date },
+  update_count: { type: Number },
+  couper_openid: { type: String },
 })
 
 const userModel = model('User', UserSchema)

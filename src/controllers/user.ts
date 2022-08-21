@@ -41,9 +41,10 @@ const createUser = async (ctx: Koa.DefaultContext, data: { openid: string; name?
     ...data,
     phone: '',
     avatar_url: '',
-    createDate: +new Date(),
-    updateDate: +new Date(),
-    updateCount: 0,
+    create_date: +new Date(),
+    update_date: +new Date(),
+    update_count: 0,
+    couper_openid: '',
   }
   const user = await new User(params).save()
   return user
@@ -67,7 +68,7 @@ class UserController {
         if (!user) {
           user = await createUser(ctx, { openid: res.data.openid })
         }
-        const token = auth.sign(ctx, { openid: user.openid })
+        const token = auth.sign(ctx, { openid: user.openid, user_id: user._id })
         ctx.success({
           user,
           token,
@@ -103,8 +104,8 @@ class UserController {
       try {
         const params = {
           ...ctx.request.body,
-          updateDate: +new Date(),
-          updateCount: (user.updateCount || 0) + 1,
+          update_date: +new Date(),
+          update_count: (user.update_count || 0) + 1,
         }
         delete params.openid
         await User.updateOne({ openid }, params)
