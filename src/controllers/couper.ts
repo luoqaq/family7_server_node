@@ -2,7 +2,7 @@ import userModel from '../models/user'
 import couperModel from '../models/coupers'
 import bindRequestModel from '../models/bindRequest'
 import Koa from 'koa'
-import { verifyT } from '../utils/utils'
+import { getMongoId, isEnableToken, verifyT } from '../utils/utils'
 
 const bindCouper = async (openid: string, couper_openid: string) => {
   const repeatCouper = await couperModel.findOne({ openid, couper_openid, is_binding: true })
@@ -71,10 +71,22 @@ class CouperController {
   async requestBind(ctx: Koa.DefaultContext) {
     ctx.verifyParams({
       target_id: { type: 'string', require: true },
-      is_bind: { type: 'boolean', required: true },
+      is_bind: { type: 'string', required: true },
     })
-    const { openid } = ctx.state
     const { target_id, is_bind } = ctx.request.body
+    let targetUser = null
+    try {
+      targetUser = await userModel.findById(target_id)
+    } catch (error) {}
+    if (!targetUser) {
+      ctx.fail(2, `不存在该目标用户`)
+      return
+    }
+    const { openid } = ctx.state
+    if (targetUser?.openid === openid) {
+      ctx.fail(3, '无法向自己发起申请')
+      return
+    }
     const repeatRecord = await bindRequestModel.findOne({ openid, is_complete: false })
     if (repeatRecord) {
       ctx.fail(1, `已经发出过绑定或解绑请求`, repeatRecord)
@@ -83,7 +95,7 @@ class CouperController {
     const params = {
       openid,
       target_id,
-      is_bind,
+      is_bind: is_bind === 'true',
       create_date: +new Date(),
       is_send_request: false,
       is_send_source: false,
@@ -169,18 +181,18 @@ class CouperController {
 
   // 获取所有绑定或解绑请求记录
   async getAllRecords(ctx: Koa.DefaultContext) {
-    verifyT(ctx, async () => {
+    if (isEnableToken(ctx)) {
       const records = await bindRequestModel.find()
       ctx.success(records)
-    })
+    }
   }
 
   // 获取所有情侣关系
   async getAllCoupers(ctx: Koa.DefaultContext) {
-    verifyT(ctx, async () => {
+    if (isEnableToken(ctx)) {
       const coupers = await couperModel.find()
       ctx.success(coupers)
-    })
+    }
   }
 }
 

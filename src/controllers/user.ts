@@ -3,6 +3,7 @@ import Koa from 'koa'
 import { getOpenid } from '../service/weixin'
 import auth from '../utils/auth'
 import { TOKEN } from '../config/config'
+import { isEnableToken } from '../utils/utils'
 const CnName = require('faker-zh-cn')
 
 // 生成一个不重名的名字
@@ -17,22 +18,18 @@ const getUserName = async () => {
 }
 
 const createUser = async (ctx: Koa.DefaultContext, data: { openid: string; name?: string }) => {
-  console.log('controller-user-cereate-1', data)
   const { name, openid } = data
   if (!openid) {
-    ctx.throw(-1, 'createUser openid 为空')
+    ctx.fail(1, 'createUser openid 为空')
   }
   const repeatUser = await User.findOne({ openid })
-  console.log('repeatUser', repeatUser)
   if (repeatUser) {
-    console.log('用户已存在', repeatUser)
-    ctx.throw(409, '用户已存在')
+    ctx.fail(409, '用户已存在')
   }
   if (name) {
     const repeatName = await User.findOne({ name })
     if (repeatName) {
-      console.log('用户名已存在', repeatName)
-      ctx.throw(409, '用户名已存在')
+      ctx.fail(409, '用户名已存在')
     }
   }
   const deafultName = await getUserName()
@@ -74,10 +71,10 @@ class UserController {
           token,
         })
       } else {
-        ctx.fail(-1, 'error', res.data)
+        ctx.fail(1, 'error', res.data)
       }
     } catch (e) {
-      ctx.fail(-1, 'error', e)
+      ctx.fail(1, 'error', e)
     }
   }
 
@@ -96,7 +93,7 @@ class UserController {
     }
     const repeatUser = await User.findOne(filter)
     if (repeatUser) {
-      ctx.fail(-1, 'name或phone已存在')
+      ctx.fail(1, 'name或phone已存在')
       return
     }
     const user = await User.findOne({ openid })
@@ -112,7 +109,7 @@ class UserController {
         ctx.success('更新成功')
       } catch (error) {
         console.error('更新失败', error)
-        ctx.fail(-1, error)
+        ctx.fail(1, error)
       }
     } else {
       const new_user = await createUser(ctx, { openid })
@@ -121,28 +118,16 @@ class UserController {
   }
 
   async getUsers(ctx: Koa.DefaultContext) {
-    if (ctx.request.body?.token === TOKEN) {
-      try {
-        const data = await User.find()
-        ctx.success(data)
-      } catch (error) {
-        ctx.fail(-1, 'error', error)
-      }
-    } else {
-      ctx.fail(-1, 'no permission')
+    if (isEnableToken(ctx)) {
+      const data = await User.find()
+      ctx.success(data)
     }
   }
 
   async deleteUser(ctx: Koa.DefaultContext) {
-    if (ctx.request.body?.token === TOKEN) {
-      try {
-        const data = await User.deleteOne({ openid: ctx.request.body.openid })
-        ctx.success(data)
-      } catch (error) {
-        ctx.fail(-1, 'error', error)
-      }
-    } else {
-      ctx.fail(-1, 'no permission')
+    if (isEnableToken(ctx)) {
+      const data = await User.deleteOne({ openid: ctx.request.body.openid })
+      ctx.success(data)
     }
   }
 }
